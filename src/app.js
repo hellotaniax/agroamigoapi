@@ -40,11 +40,4 @@ app.use('/api/app/usuarios', usuariosAppRoutes);
 app.use('/api/app/roles', rolesAppRoutes);
 app.use('/api/app/usuarios-roles', usuariosRolesAppRoutes);
 
-
-
-
-
-const PORT = process.env.PORT || 3276;
-app.listen(PORT, () => {
-  console.log(`AgroAmigo API corriendo en puerto ${PORT}`);
-});
+module.exports = app;
