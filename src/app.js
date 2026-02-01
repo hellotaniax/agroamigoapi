@@ -12,7 +12,9 @@ const cultivosFertilizantesAppRoutes = require('./routes/app.cultivosfertilizant
 const mensajesAppRoutes = require('./routes/app.mensajes.routes');
 const tiposFertilizantesAppRoutes = require('./routes/app.tiposfertilizantes.routes');
 const recomendacionesAppRoutes = require('./routes/app.recomendaciones.routes');
+const recomendacionesCultivosAppRoutes = require('./routes/app.recomendacionescultivos.routes');
 const usuariosAppRoutes = require('./routes/app.usuarios.routes');
+const rolesAppRoutes = require('./routes/app.roles.routes');
 
 
 
@@ -32,7 +34,10 @@ app.use('/api/app/cultivos-fertilizantes', cultivosFertilizantesAppRoutes);
 app.use('/api/app/mensajes', mensajesAppRoutes);
 app.use('/api/app/tipos-fertilizantes', tiposFertilizantesAppRoutes);
 app.use('/api/app/recomendaciones', recomendacionesAppRoutes);
+app.use('/api/app/recomendaciones-cultivos', recomendacionesCultivosAppRoutes);
 app.use('/api/app/usuarios', usuariosAppRoutes);
+app.use('/api/app/roles', rolesAppRoutes);
+
 
 
 

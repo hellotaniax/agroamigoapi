@@ -1,4 +1,4 @@
-const service = require('../services/app.recomendacion_cultivo.service');
+const service = require('../services/app.recomendacionescultivos.service');
 
 exports.getAll = async (req, res) => {
   try {

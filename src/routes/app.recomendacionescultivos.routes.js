@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/app.recomendacion_cultivo.controller');
+const controller = require('../controllers/app.recomendacionescultivos.controller');
 
 // Obtener todas las asignaciones
 router.get('/', controller.getAll);
