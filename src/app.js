@@ -8,7 +8,7 @@ const recomendacionesRoutes = require('./routes/agente.recomendaciones.routes');
 
 const cultivosAppRoutes = require('./routes/app.cultivos.routes');
 const fertilizantesAppRoutes = require('./routes/app.fertilizantes.routes');
-
+const recomendacionesAppRoutes = require('./routes/app.recomendaciones.routes');
 
 
 const app = express();
@@ -22,7 +22,7 @@ app.use('/api/recomendaciones', recomendacionesRoutes);
 
 app.use('/api/app/cultivos', cultivosAppRoutes);
 app.use('/api/app/fertilizantes', fertilizantesAppRoutes);
-
+app.use('/api/app/recomendaciones', recomendacionesAppRoutes);
 
 const PORT = process.env.PORT || 3276;
 app.listen(PORT, () => {
