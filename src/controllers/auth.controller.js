@@ -1,6 +1,6 @@
 const { generarToken, compararPassword } = require('../services/auth.service');
-const poolApp = require('../config/dbapp');       
-const poolAgente = require('../config/dbagente'); 
+const poolApp = require('../config/dbapp');
+const poolAgente = require('../config/dbagente');
 
 const login = async (req, res) => {
   const { email, password, tipo } = req.body;
@@ -11,9 +11,21 @@ const login = async (req, res) => {
 
     if (!pool) return res.status(500).json({ message: "Pool de DB no definido" });
 
-    // Consulta usando columnas reales
+    // consulta para obtener roles asociados
     const result = await pool.query(
-      "SELECT * FROM usuarios WHERE emailusu = $1",
+      `
+      SELECT
+        u.idusu,
+        u.nombreusu,
+        u.emailusu,
+        u.passwordusu,
+        ARRAY_AGG(r.nombrerol) AS roles
+      FROM usuarios u
+      JOIN usuario_roles ur ON u.idusu = ur.idusu
+      JOIN roles r ON ur.idrol = r.idrol
+      WHERE u.emailusu = $1
+      GROUP BY u.idusu, u.nombreusu, u.emailusu, u.passwordusu
+      `,
       [email]
     );
 
@@ -36,7 +48,7 @@ const login = async (req, res) => {
       usuario: {
         id: usuario.idusu,
         email: usuario.emailusu,
-        // rol: usuario.rolusu // solo si existe la columna
+        roles: usuario.roles
       }
     });
 
