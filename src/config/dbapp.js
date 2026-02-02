@@ -1,9 +1,8 @@
-const Pool = require('pg').Pool;
+const { Pool } = require('pg');
 
-const pool = new Pool({
+const poolApp = new Pool({
   connectionString: process.env.DATABASE_URLAPP,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  ssl: false
 });
-module.exports = pool;
+
+module.exports = poolApp;
