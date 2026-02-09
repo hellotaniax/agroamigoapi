@@ -18,15 +18,3 @@ exports.validarCultivo = async (req, res) => {
 
   res.json({ valido: true, cultivo: nombre });
 };
-
-exports.obtenerFertilizantes = async (req, res) => {
-  const { nombre } = req.params;
-  const data = await service.getFertilizantesPorCultivo(nombre);
-  res.json(data);
-};
-
-exports.obtenerRecomendaciones = async (req, res) => {
-  const { nombre } = req.params;
-  const data = await service.getRecomendacionesPorCultivo(nombre);
-  res.json(data);
-};

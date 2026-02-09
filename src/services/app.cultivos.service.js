@@ -21,14 +21,14 @@ exports.getCultivoById = async (id) => {
 
 /**
  * Crear un nuevo cultivo
- * @param {Object} data - Objeto con { nombrecul, descripcioncul, idest }
+ * @param {Object} data - Objeto con { nombrecul, idtcul, idest }
  */
-exports.createCultivo = async ({ nombrecul, descripcioncul, idest }) => {
+exports.createCultivo = async ({ nombrecul, idtcul, idest }) => {
   const { rows } = await db.query(
-    `INSERT INTO cultivos (nombrecul, descripcioncul, idest)
+    `INSERT INTO cultivos (nombrecul, idtcul, idest)
      VALUES ($1, $2, $3)
      RETURNING *`,
-    [nombrecul, descripcioncul, idest]
+    [nombrecul, idtcul, idest]
   );
   return rows[0];
 };
@@ -36,18 +36,18 @@ exports.createCultivo = async ({ nombrecul, descripcioncul, idest }) => {
 /**
  * Actualizar un cultivo existente
  * @param {number} id - idcul
- * @param {Object} data - Objeto con { nombrecul, descripcioncul, idest }
+ * @param {Object} data - Objeto con { nombrecul, idtcul, idest }
  */
-exports.updateCultivo = async (id, { nombrecul, descripcioncul, idest }) => {
+exports.updateCultivo = async (id, { nombrecul, idtcul, idest }) => {
   const { rows } = await db.query(
     `UPDATE cultivos
      SET nombrecul = $1, 
-         descripcioncul = $2, 
+         idtcul = $2, 
          idest = $3, 
          updatedatcul = CURRENT_TIMESTAMP
      WHERE idcul = $4
      RETURNING *`,
-    [nombrecul, descripcioncul, idest, id]
+    [nombrecul, idtcul, idest, id]
   );
   return rows[0];
 };

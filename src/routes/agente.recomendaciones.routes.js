@@ -4,6 +4,5 @@ const controller = require('../controllers/agente.recomendaciones.controller');
 
 router.get('/', controller.obtenerRecomendacionesPublicadas);
 router.get('/criticas', controller.obtenerRecomendacionesCriticas);
-router.get('/cultivo/:nombre', controller.obtenerRecomendacionesPorCultivo);
 
 module.exports = router;

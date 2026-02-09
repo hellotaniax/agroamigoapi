@@ -36,11 +36,9 @@ app.use('/api/recomendaciones', recomendacionesRoutes);
 // Rutas de la aplicación
 app.use('/api/app/cultivos', cultivosAppRoutes);
 app.use('/api/app/fertilizantes', fertilizantesAppRoutes);
-app.use('/api/app/cultivos-fertilizantes', cultivosFertilizantesAppRoutes);
 app.use('/api/app/mensajes', mensajesAppRoutes);
 app.use('/api/app/tipos-fertilizantes', tiposFertilizantesAppRoutes);
 app.use('/api/app/recomendaciones', recomendacionesAppRoutes);
-app.use('/api/app/recomendaciones-cultivos', recomendacionesCultivosAppRoutes);
 app.use('/api/app/usuarios', usuariosAppRoutes);
 app.use('/api/app/roles', rolesAppRoutes);
 app.use('/api/app/usuarios-roles', usuariosRolesAppRoutes);
