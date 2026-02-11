@@ -33,6 +33,7 @@ app.use('/api/cultivos', cultivosRoutes);
 app.use('/api/mensajes', mensajesRoutes);
 app.use('/api/recomendaciones', recomendacionesRoutes);
 
+
 // Rutas de la aplicación
 app.use('/api/app/cultivos', cultivosAppRoutes);
 app.use('/api/app/fertilizantes', fertilizantesAppRoutes);
