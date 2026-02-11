@@ -2,7 +2,7 @@ const db = require('../config/dbagente');
 
 exports.getCultivosValidos = async () => {
   const { rows } = await db.query(
-    'SELECT idcul, nombrecul FROM vw_ag_cultivos_validos'
+    'SELECT nombrecul FROM vw_ag_cultivos_validos'
   );
   return rows;
 };
