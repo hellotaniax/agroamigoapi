@@ -12,6 +12,7 @@ const login = async (req, res) => {
     if (!pool) return res.status(500).json({ message: "Pool de DB no definido" });
 
     // consulta para obtener roles asociados
+    // Mover este query a un servicio específico de autenticación si es necesario
     const result = await pool.query(
       `
       SELECT
