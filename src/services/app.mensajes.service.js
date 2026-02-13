@@ -25,7 +25,7 @@ exports.createMensaje = async ({ codigomen, contenidomen, idest }) => {
   return rows[0];
 };
 
-exports.updateMensaje = async (id, { codigomen, contenidomen, idest }) => {
+exports.updateMensaje = async (idmen, { codigomen, contenidomen, idest }) => {
   const { rows } = await db.query(
     `UPDATE mensajes
      SET codigomen = $1, 
@@ -33,7 +33,7 @@ exports.updateMensaje = async (id, { codigomen, contenidomen, idest }) => {
          idest = $3
      WHERE idmen = $4
      RETURNING *`,
-    [codigomen, contenidomen, idest, id]
+    [codigomen, contenidomen, idest, idmen] // id debe ser String si idmen es varchar
   );
   return rows[0];
 };

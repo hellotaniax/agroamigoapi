@@ -21,33 +21,32 @@ exports.getCultivoById = async (id) => {
 
 /**
  * Crear un nuevo cultivo
- * @param {Object} data - Objeto con { nombrecul, idtcul, idest }
+ * @param {Object} data - Objeto con { nombrecul, idtcul, idest, creacioncul }
  */
-exports.createCultivo = async ({ nombrecul, idtcul, idest }) => {
+exports.createCultivo = async ({ nombrecul, idtcul, idest, creacioncul }) => {
   const { rows } = await db.query(
-    `INSERT INTO cultivos (nombrecul, idtcul, idest)
-     VALUES ($1, $2, $3)
+    `INSERT INTO cultivos (nombrecul, idtcul, idest, creacioncul)
+     VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
      RETURNING *`,
-    [nombrecul, idtcul, idest]
+    [nombrecul, idtcul, idest, creacioncul]
   );
   return rows[0];
 };
 
 /**
  * Actualizar un cultivo existente
- * @param {number} id - idcul
+ * @param {string} id - idcul (Varchar en tu DB actual)
  * @param {Object} data - Objeto con { nombrecul, idtcul, idest }
  */
-exports.updateCultivo = async (id, { nombrecul, idtcul, idest }) => {
+exports.updateCultivo = async (idcul, { nombrecul, idtcul, idest }) => {
   const { rows } = await db.query(
     `UPDATE cultivos
      SET nombrecul = $1, 
          idtcul = $2, 
-         idest = $3, 
-         updatedatcul = CURRENT_TIMESTAMP
+         idest = $3
      WHERE idcul = $4
      RETURNING *`,
-    [nombrecul, idtcul, idest, id]
+    [nombrecul, idtcul, idest, idcul] // El orden coincide con $1, $2, $3, $4
   );
   return rows[0];
 };
