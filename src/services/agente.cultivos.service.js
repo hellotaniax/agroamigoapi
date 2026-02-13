@@ -1,4 +1,4 @@
-const db = require('../config/dbagente');
+const db = require('../config/agentedb');
 
 exports.getCultivosValidos = async () => {
   const { rows } = await db.query(

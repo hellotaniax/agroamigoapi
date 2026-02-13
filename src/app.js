@@ -13,14 +13,11 @@ const recomendacionesRoutes = require('./routes/agente.recomendaciones.routes');
 // Rutas de la aplicación
 const cultivosAppRoutes = require('./routes/app.cultivos.routes');
 const fertilizantesAppRoutes = require('./routes/app.fertilizantes.routes');
-const cultivosFertilizantesAppRoutes = require('./routes/app.cultivosfertilizantes.routes');
 const mensajesAppRoutes = require('./routes/app.mensajes.routes');
 const tiposFertilizantesAppRoutes = require('./routes/app.tiposfertilizantes.routes');
 const recomendacionesAppRoutes = require('./routes/app.recomendaciones.routes');
-const recomendacionesCultivosAppRoutes = require('./routes/app.recomendacionescultivos.routes');
 const usuariosAppRoutes = require('./routes/app.usuarios.routes');
 const rolesAppRoutes = require('./routes/app.roles.routes');
-const usuariosRolesAppRoutes = require('./routes/app.usuariosroles.routes');
 
 // Crear la aplicación Express
 const app = express();
@@ -42,10 +39,9 @@ app.use('/api/app/tipos-fertilizantes', tiposFertilizantesAppRoutes);
 app.use('/api/app/recomendaciones', recomendacionesAppRoutes);
 app.use('/api/app/usuarios', usuariosAppRoutes);
 app.use('/api/app/roles', rolesAppRoutes);
-app.use('/api/app/usuarios-roles', usuariosRolesAppRoutes);
 
 // Rutas de autenticación
-app.use("/api/auth", authRoutes);
+app.use("/api/app/auth", authRoutes);
 
 // Ruta de salud del servicio
 app.get('/health', (req, res) => {
@@ -56,3 +52,10 @@ app.get('/health', (req, res) => {
 });
 // Exportar la aplicación
 module.exports = app;
+
+
+//Rutas nuevas (SOLO PRUEBA, NO HACER PUSH CON ESTO, SOLO PRUEBA LOCALMENTE)
+
+const tiposCultivosAppRoutes = require('./routes/app.tiposcultivos.routes');
+
+app.use('/api/app/tipos-cultivos', tiposCultivosAppRoutes);
