@@ -1,4 +1,4 @@
-const db = require('../config/dbapp');
+const db = require('../config/admindb');
 const bcrypt = require('bcrypt');
 
 // Obtener todos los usuarios

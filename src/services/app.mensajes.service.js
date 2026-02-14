@@ -1,4 +1,4 @@
-const db = require('../config/dbapp');
+const db = require('../config/admindb');
 
 exports.getMensajes = async () => {
   const { rows } = await db.query(

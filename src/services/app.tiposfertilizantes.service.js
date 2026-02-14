@@ -1,7 +1,7 @@
-const db = require('../config/dbapp');
+const db = require('../config/admindb');
 
 // Obtener todos los tipos de fertilizante
-exports.getTipos = async () => {
+exports.getTiposFertilizantes = async () => {
   const { rows } = await db.query(
     'SELECT * FROM tipos_fertilizantes ORDER BY nombretfer'
   );
@@ -9,7 +9,7 @@ exports.getTipos = async () => {
 }
 
 // Obtener tipo por ID
-exports.getTipoById = async (idtfer) => {
+exports.getTipoFertilizanteById = async (idtfer) => {
   const { rows } = await db.query(
     'SELECT * FROM tipos_fertilizantes WHERE idtfer = $1',
     [idtfer]
@@ -18,16 +18,16 @@ exports.getTipoById = async (idtfer) => {
 }
 
 // Crear tipo de fertilizante
-exports.createTipo = async (nombretfer) => {
+exports.createTipoFertilizante = async (nombretfer) => {
   const { rows } = await db.query(
     'INSERT INTO tipos_fertilizantes (nombretfer) VALUES ($1) RETURNING *',
-    [nombretferq]
+    [nombretfer]
   );
   return rows[0];
 }
 
 // Actualizar tipo de fertilizante
-exports.updateTipo = async (idtfer, nombretfer) => {
+exports.updateTipoFertilizante = async (idtfer, nombretfer) => {
   const { rows } = await db.query(
     'UPDATE tipos_fertilizantes SET nombretfer = $1 WHERE idtfer = $2 RETURNING *',
     [nombretfer, idtfer]
@@ -36,7 +36,7 @@ exports.updateTipo = async (idtfer, nombretfer) => {
 }
 
 // Eliminar tipo de fertilizante
-exports.deleteTipo = async (idtfer) => {
+exports.deleteTipoFertilizante = async (idtfer) => {
   const { rows } = await db.query(
     'DELETE FROM tipos_fertilizantes WHERE idtfer = $1 RETURNING *',
     [idtfer]
