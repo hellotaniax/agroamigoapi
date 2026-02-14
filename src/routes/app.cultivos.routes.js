@@ -8,7 +8,7 @@ const verificarRol = require('../middlewares/verificarrol');
 router.get(
   '/',
   verificarToken,
-  verificarRol('superadministrador', 'agronomo', 'investigador'),
+  verificarRol('Admin', 'agronomo', 'investigador'),
   controller.getCultivos
 );
 
@@ -16,7 +16,7 @@ router.get(
 router.get(
   '/:id',
   verificarToken,
-  verificarRol('superadministrador', 'agronomo', 'investigador'),
+  verificarRol('Admin', 'agronomo', 'investigador'),
   controller.getCultivoById
 );
 
@@ -24,7 +24,7 @@ router.get(
 router.post(
   '/',
   verificarToken,
-  verificarRol('superadministrador', 'agronomo'),
+  verificarRol('Admin', 'agronomo'),
   controller.createCultivo
 );
 
@@ -32,7 +32,7 @@ router.post(
 router.put(
   '/:id',
   verificarToken,
-  verificarRol('superadministrador', 'agronomo'),
+  verificarRol('Admin', 'agronomo'),
   controller.updateCultivo
 );
 
@@ -40,7 +40,7 @@ router.put(
 router.delete(
   '/:id',
   verificarToken,
-  verificarRol('superadministrador', 'agronomo'),
+  verificarRol('Admin', 'agronomo'),
   controller.deleteCultivo
 );
 

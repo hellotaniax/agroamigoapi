@@ -1,17 +1,22 @@
 const verificarRol = (...rolesPermitidos) => {
   return (req, res, next) => {
-    // Verificación básica
-    if (!req.user || !req.user.roles) {
-      return res.status(403).json({ message: 'Acceso denegado' });
+    // Usamos req.user que es lo que viene de verificarToken
+    const usuario = req.user; 
+
+    // Verificamos si existe el usuario y si tiene la propiedad 'rol'
+    if (!usuario || !usuario.rol) {
+      return res.status(403).json({ 
+        message: 'Acceso denegado: El token no contiene información de rol' 
+      });
     }
 
-    // Verificar si el usuario tiene al menos uno de los roles permitidos
-    const tienePermiso = req.user.roles.some(rol =>
-      rolesPermitidos.includes(rol)
-    );
+    // Comparamos el rol del token con los permitidos en la ruta
+    const tienePermiso = rolesPermitidos.includes(usuario.rol);
 
     if (!tienePermiso) {
-      return res.status(403).json({ message: 'No tienes permisos para esta acción' });
+      return res.status(403).json({ 
+        message: `No tienes permisos. Tu rol es: ${usuario.rol}` 
+      });
     }
 
     next();

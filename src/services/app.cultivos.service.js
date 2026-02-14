@@ -23,12 +23,12 @@ exports.getCultivoById = async (id) => {
  * Crear un nuevo cultivo
  * @param {Object} data - Objeto con { nombrecul, idtcul, idest, creacioncul }
  */
-exports.createCultivo = async ({ nombrecul, idtcul, idest, creacioncul }) => {
+exports.createCultivo = async ({ nombrecul, idtcul, idest}) => {
   const { rows } = await db.query(
     `INSERT INTO cultivos (nombrecul, idtcul, idest, creacioncul)
      VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
      RETURNING *`,
-    [nombrecul, idtcul, idest, creacioncul]
+    [nombrecul, idtcul, idest]
   );
   return rows[0];
 };

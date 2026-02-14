@@ -4,29 +4,19 @@ const poolAgente = require('../config/agentedb');
 
 const login = async (req, res) => {
   const { email, password, tipo } = req.body;
-  // tipo = "app" | "agente"
 
   try {
     const pool = tipo === "agente" ? poolAgente : poolApp;
 
     if (!pool) return res.status(500).json({ message: "Pool de DB no definido" });
 
-    // consulta para obtener roles asociados
-    // Mover este query a un servicio específico de autenticación si es necesario
+    // Consulta actualizada para usar la relación directa con la tabla roles
+    // SELECT que debe estar en tu servicio de login
     const result = await pool.query(
-      `
-      SELECT
-        u.idusu,
-        u.nombreusu,
-        u.emailusu,
-        u.passwordusu,
-        ARRAY_AGG(r.nombrerol) AS roles
+      `SELECT u.idusu, u.nombreusu, u.emailusu, u.contraseniausu, r.nombrerol AS rol
       FROM usuarios u
-      JOIN usuario_roles ur ON u.idusu = ur.idusu
-      JOIN roles r ON ur.idrol = r.idrol
-      WHERE u.emailusu = $1
-      GROUP BY u.idusu, u.nombreusu, u.emailusu, u.passwordusu
-      `,
+      JOIN roles r ON u.idrol = r.idrol
+      WHERE u.emailusu = $1`,
       [email]
     );
 
@@ -36,8 +26,8 @@ const login = async (req, res) => {
 
     const usuario = result.rows[0];
 
-    // Comparar con la columna correcta
-    const valido = await compararPassword(password, usuario.passwordusu);
+    // Se usa usuario.contraseniausu que es el nombre real en tu DB
+    const valido = await compararPassword(password, usuario.contraseniausu);
     if (!valido) {
       return res.status(401).json({ message: "Credenciales inválidas" });
     }
@@ -49,7 +39,7 @@ const login = async (req, res) => {
       usuario: {
         id: usuario.idusu,
         email: usuario.emailusu,
-        roles: usuario.roles
+        rol: usuario.rol 
       }
     });
 

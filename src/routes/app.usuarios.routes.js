@@ -8,14 +8,14 @@ const verificarRol = require('../middlewares/verificarrol');
 router.get(
   '/',
   authMiddleware,
-  verificarRol('administrador', 'superadministrador'),
+  verificarRol('Admin', 'superadministrador'),
   controller.getAll
 );
 
 router.get(
   '/:id',
   authMiddleware,
-  verificarRol('administrador', 'superadministrador'),
+  verificarRol('Admin', 'superadministrador'),
   controller.getById
 );
 
@@ -23,21 +23,21 @@ router.get(
 router.post(
   '/',
   authMiddleware,
-  verificarRol('administrador', 'superadministrador'),
+  verificarRol('Admin', 'superadministrador'),
   controller.create
 );
 
 router.put(
   '/:id',
   authMiddleware,
-  verificarRol('administrador', 'superadministrador'),
+  verificarRol('Admin', 'superadministrador'),
   controller.update
 );
 
 router.delete(
   '/:id',
   authMiddleware,
-  verificarRol('administrador', 'superadministrador'),
+  verificarRol('Admin', 'superadministrador'),
   controller.delete
 );
 

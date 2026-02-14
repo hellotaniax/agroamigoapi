@@ -14,7 +14,7 @@ exports.getAll = async (req, res) => {
 // Obtener fertilizante por ID
 exports.getById = async (req, res) => {
   try {
-    const idfer = parseInt(req.params.id);
+    const idfer = req.params.id; // Eliminado parseInt porque es un VARCHAR (FER-0001)
     const fertilizante = await service.getFertilizanteById(idfer);
     if (!fertilizante) return res.status(404).json({ message: 'Fertilizante no encontrado' });
     res.json(fertilizante);
@@ -27,11 +27,14 @@ exports.getById = async (req, res) => {
 // Crear fertilizante
 exports.create = async (req, res) => {
   try {
-    const { nombrefer, idtip, descripcionfer, idest } = req.body;
-    const nuevo = await service.createFertilizante({ nombrefer, idtip, descripcionfer, idest });
+    // CAMBIO: Usamos 'idtfer' para que coincida con el service
+    const { nombrefer, idtfer, descripcionfer, idest } = req.body;
+    
+    // Pasamos 'idtfer' al servicio
+    const nuevo = await service.createFertilizante({ nombrefer, idtfer, descripcionfer, idest });
     res.status(201).json(nuevo);
   } catch (error) {
-    console.error(error);
+    console.error("Error detallado:", error);
     res.status(500).json({ message: 'Error al crear fertilizante' });
   }
 };
@@ -39,9 +42,9 @@ exports.create = async (req, res) => {
 // Actualizar fertilizante
 exports.update = async (req, res) => {
   try {
-    const idfer = parseInt(req.params.id);
-    const { nombrefer, idtip, descripcionfer, idest } = req.body;
-    const actualizado = await service.updateFertilizante(idfer, { nombrefer, idtip, descripcionfer, idest });
+    const idfer = req.params.id; // Eliminado parseInt
+    const { nombrefer, idtfer, descripcionfer, idest } = req.body;
+    const actualizado = await service.updateFertilizante(idfer, { nombrefer, idtfer, descripcionfer, idest });
     if (!actualizado) return res.status(404).json({ message: 'Fertilizante no encontrado' });
     res.json(actualizado);
   } catch (error) {
@@ -53,7 +56,7 @@ exports.update = async (req, res) => {
 // Eliminar fertilizante
 exports.delete = async (req, res) => {
   try {
-    const idfer = parseInt(req.params.id);
+    const idfer = req.params.id; // Eliminado parseInt
     const eliminado = await service.deleteFertilizante(idfer);
     if (!eliminado) return res.status(404).json({ message: 'Fertilizante no encontrado' });
     res.json({ message: 'Fertilizante eliminado', fertilizante: eliminado });

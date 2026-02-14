@@ -12,7 +12,7 @@ const verificarToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, jwtConfig.secret);
-    req.user = decoded;  // <- aquí lo llamamos "user" y no "usuario"
+    req.user = decoded; // Se guarda como "user"
     next();
   } catch (err) {
     return res.status(401).json({ message: 'Token inválido' });
