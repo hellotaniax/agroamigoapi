@@ -1,4 +1,4 @@
-const db = require('../config/dbapp');
+const db = require('../config/admindb');
 
 // Obtener todos los fertilizantes
 exports.getFertilizantes = async () => {

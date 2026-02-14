@@ -1,4 +1,4 @@
-const db = require('../config/dbapp');
+const db = require('../config/admindb');
 
 exports.getRecomendaciones = async () => {
   const { rows } = await db.query(
@@ -25,7 +25,7 @@ exports.createRecomendacion = async ({ titulorec, descripcionrec, idest, idpri }
   return rows[0];
 };
 
-exports.updateRecomendacion = async (id, { titulorec, descripcionrec, idest, idpri }) => {
+exports.updateRecomendacion = async (idrec, { titulorec, descripcionrec, idest, idpri }) => {
   const { rows } = await db.query(
     `UPDATE recomendaciones
      SET titulorec = $1, 
@@ -34,7 +34,7 @@ exports.updateRecomendacion = async (id, { titulorec, descripcionrec, idest, idp
          idpri = $4
      WHERE idrec = $5
      RETURNING *`,
-    [titulorec, descripcionrec, idest, idpri, id]
+    [titulorec, descripcionrec, idest, idpri, idrec]
   );
   return rows[0];
 };

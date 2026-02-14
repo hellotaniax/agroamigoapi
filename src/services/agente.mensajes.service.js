@@ -1,4 +1,4 @@
-const db = require('../config/dbagente');
+const db = require('../config/agentedb');
 
 exports.getMensajesPublicados = async () => {
   const { rows } = await db.query(

@@ -1,6 +1,6 @@
 const { generarToken, compararPassword } = require('../services/auth.service');
-const poolApp = require('../config/dbapp');
-const poolAgente = require('../config/dbagente');
+const poolApp = require('../config/admindb');
+const poolAgente = require('../config/agentedb');
 
 const login = async (req, res) => {
   const { email, password, tipo } = req.body;
