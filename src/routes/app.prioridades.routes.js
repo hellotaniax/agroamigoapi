@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/app.prioridades.controller');
+const { todos, investigador } = require('../middlewares/permisos.config');
 // CRUD completo
-router.get('/', controller.getAll);        // Listar todos
-router.get('/:id', controller.getById);    // Obtener por ID
-router.post('/', controller.create);       // Crear
-router.put('/:id', controller.update);     // Actualizar
-router.delete('/:id', controller.delete);  // Eliminar
+router.get('/', todos, controller.getAll);        // Listar todos
+router.get('/:id', todos, controller.getById);    // Obtener por ID
+router.post('/', investigador, controller.create);       // Crear
+router.put('/:id', investigador, controller.update);     // Actualizar
+router.delete('/:id', investigador, controller.delete);  // Eliminar
 module.exports = router;
