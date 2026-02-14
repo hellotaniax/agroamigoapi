@@ -1,14 +1,15 @@
 const verificarRol = (...rolesPermitidos) => {
   return (req, res, next) => {
-    // Verificación básica
-    if (!req.user || !req.user.roles) {
-      return res.status(403).json({ message: 'Acceso denegado' });
+    // 1. Cambiamos req.user por req.usuario (o como lo nombres en verificarToken)
+    // 2. Cambiamos .roles (array) por .rol (string único)
+    const usuario = req.usuario || req.user; 
+
+    if (!usuario || !usuario.rol) {
+      return res.status(403).json({ message: 'Acceso denegado: Usuario sin rol' });
     }
 
-    // Verificar si el usuario tiene al menos uno de los roles permitidos
-    const tienePermiso = req.user.roles.some(rol =>
-      rolesPermitidos.includes(rol)
-    );
+    // Como ahora es un solo string, usamos .includes directamente sobre el array de permitidos
+    const tienePermiso = rolesPermitidos.includes(usuario.rol);
 
     if (!tienePermiso) {
       return res.status(403).json({ message: 'No tienes permisos para esta acción' });
