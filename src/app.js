@@ -21,6 +21,7 @@ const recomendacionesRoutes = require('./routes/agente.recomendaciones.routes');
 const tiposCultivosAppRoutes = require('./routes/app.tiposcultivos.routes');
 const tiposFertilizantesAppRoutes = require('./routes/app.tiposfertilizantes.routes');
 const rolesAppRoutes = require('./routes/app.roles.routes');
+const estadosAppRoutes = require('./routes/app.estados.routes');
 
 // Funcionalidades
 const cultivosAppRoutes = require('./routes/app.cultivos.routes');
@@ -60,6 +61,7 @@ app.use('/api/recomendaciones', recomendacionesRoutes);
 app.use('/api/app/roles', rolesAppRoutes);
 app.use('/api/app/tipos-fertilizantes', tiposFertilizantesAppRoutes);
 app.use('/api/app/tipos-cultivos', tiposCultivosAppRoutes);
+app.use('/api/app/estados', estadosAppRoutes);
 
 // Funcionalidades
 app.use('/api/app/cultivos', cultivosAppRoutes);
