@@ -1,47 +1,22 @@
+// routes/cultivos.routes.js
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/app.cultivos.controller');
-const verificarToken = require('../middlewares/auth.middleware');
-const verificarRol = require('../middlewares/verificarrol');
+const { todos, agronomo, admin } = require('../middlewares/permisos.config');
 
 // Obtener todos los cultivos
-router.get(
-  '/',
-  verificarToken,
-  verificarRol('Admin', 'agronomo', 'investigador'),
-  controller.getCultivos
-);
+router.get('/', todos, controller.getCultivos);
 
 // Obtener un cultivo por ID
-router.get(
-  '/:id',
-  verificarToken,
-  verificarRol('Admin', 'agronomo', 'investigador'),
-  controller.getCultivoById
-);
+router.get('/:id', todos, controller.getCultivoById);
 
 // Crear un nuevo cultivo
-router.post(
-  '/',
-  verificarToken,
-  verificarRol('Admin', 'agronomo'),
-  controller.createCultivo
-);
+router.post('/', agronomo, controller.createCultivo);
 
 // Actualizar un cultivo existente por ID
-router.put(
-  '/:id',
-  verificarToken,
-  verificarRol('Admin', 'agronomo'),
-  controller.updateCultivo
-);
+router.put('/:id', agronomo, controller.updateCultivo);
 
 // Eliminar un cultivo por ID
-router.delete(
-  '/:id',
-  verificarToken,
-  verificarRol('Admin', 'agronomo'),
-  controller.deleteCultivo
-);
+router.delete('/:id', agronomo, controller.deleteCultivo);
 
 module.exports = router;
