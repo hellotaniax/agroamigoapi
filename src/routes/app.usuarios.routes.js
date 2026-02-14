@@ -1,44 +1,14 @@
+// routes/usuarios.routes.js
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/app.usuarios.controller');
-const authMiddleware = require('../middlewares/auth.middleware');
-const verificarRol = require('../middlewares/verificarrol');
+const { admin } = require('../middlewares/permisos.config');
 
-// SOLO ADMINISTRADORES
-router.get(
-  '/',
-  authMiddleware,
-  verificarRol('Admin', 'superadministrador'),
-  controller.getAll
-);
-
-router.get(
-  '/:id',
-  authMiddleware,
-  verificarRol('Admin', 'superadministrador'),
-  controller.getById
-);
-
-// SOLO ADMINISTRADORES
-router.post(
-  '/',
-  authMiddleware,
-  verificarRol('Admin', 'superadministrador'),
-  controller.create
-);
-
-router.put(
-  '/:id',
-  authMiddleware,
-  verificarRol('Admin', 'superadministrador'),
-  controller.update
-);
-
-router.delete(
-  '/:id',
-  authMiddleware,
-  verificarRol('Admin', 'superadministrador'),
-  controller.delete
-);
+// Todas estas rutas ahora están protegidas solo para Administradores
+router.get('/', admin, controller.getAll);
+router.get('/:id', admin, controller.getById);
+router.post('/', admin, controller.create);
+router.put('/:id', admin, controller.update);
+router.delete('/:id', admin, controller.delete);
 
 module.exports = router;
