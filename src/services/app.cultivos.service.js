@@ -2,7 +2,7 @@ const db = require('../config/admindb');
 
 exports.getCultivos = async () => {
   const { rows } = await db.query(
-    'SELECT idcul, nombrecul FROM cultivos ORDER BY nombrecul'
+    'SELECT * FROM cultivos ORDER BY nombrecul'
   );
   return rows;
 }
