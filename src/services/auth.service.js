@@ -11,7 +11,7 @@ const generarToken = (usuario) => {
     {
       id: usuario.idusu,
       email: usuario.emailusu,
-      rol: usuario.idrol // Cambiado de 'roles' a 'rol' para coincidir con el JOIN de la DB
+      rol: usuario.rol // Cambiado de 'roles' a 'rol' para coincidir con el JOIN de la DB
     },
     jwtConfig.secret,
     { expiresIn: jwtConfig.expiresIn }

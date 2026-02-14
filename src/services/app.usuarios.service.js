@@ -22,17 +22,25 @@ exports.getUsuarioById = async (idusu) => {
   return rows[0];
 }
 
-// Crear usuario (CON TRIGGER ACTIVO E IDROL)
+// Recibe un objeto (data), NO req ni res
 exports.createUsuario = async ({ nombreusu, apellidosusu, emailusu, passwordusu, idest, idrol }) => {
-  const hashedPassword = await bcrypt.hash(passwordusu, 10);
-  const { rows } = await db.query(
-    `INSERT INTO usuarios (nombreusu, apellidosusu, emailusu, contraseniausu, idest, idrol)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING idusu, nombreusu, emailusu, idest, idrol, creacionusu`,
-    [nombreusu, apellidosusu, emailusu, hashedPassword, parseInt(idest), parseInt(idrol)]
-  ); 
-  return rows[0];
-}
+    
+    // Validar que los campos obligatorios existan antes de procesar
+    if (!nombreusu || !emailusu || !passwordusu) {
+        throw new Error("Faltan campos obligatorios en el servicio");
+    }
+
+    const hashedPassword = await bcrypt.hash(passwordusu, 10);
+
+    const { rows } = await db.query(
+        `INSERT INTO usuarios (nombreusu, apellidosusu, emailusu, contraseniausu, idest, idrol)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING idusu, nombreusu, emailusu, idest, idrol, creacionusu`,
+        [nombreusu, apellidosusu, emailusu, hashedPassword, parseInt(idest), parseInt(idrol)]
+    );
+
+    return rows[0];
+};
 
 // Actualizar usuario
 exports.updateUsuario = async (idusu, { nombreusu, apellidosusu, emailusu, passwordusu, idest, idrol }) => {

@@ -11,18 +11,12 @@ const login = async (req, res) => {
     if (!pool) return res.status(500).json({ message: "Pool de DB no definido" });
 
     // Consulta actualizada para usar la relación directa con la tabla roles
+    // SELECT que debe estar en tu servicio de login
     const result = await pool.query(
-      `
-      SELECT
-        u.idusu,
-        u.nombreusu,
-        u.emailusu,
-        u.contraseniausu, -- Nombre de columna según tu esquema SQL
-        r.nombrerol AS rol
+      `SELECT u.idusu, u.nombreusu, u.emailusu, u.contraseniausu, r.nombrerol AS rol
       FROM usuarios u
-      JOIN roles r ON u.idrol = r.idrol -- Relación directa 1 a 1 según tu imagen
-      WHERE u.emailusu = $1
-      `,
+      JOIN roles r ON u.idrol = r.idrol
+      WHERE u.emailusu = $1`,
       [email]
     );
 

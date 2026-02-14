@@ -1,18 +1,22 @@
 const verificarRol = (...rolesPermitidos) => {
   return (req, res, next) => {
-    // 1. Cambiamos req.user por req.usuario (o como lo nombres en verificarToken)
-    // 2. Cambiamos .roles (array) por .rol (string único)
-    const usuario = req.usuario || req.user; 
+    // Usamos req.user que es lo que viene de verificarToken
+    const usuario = req.user; 
 
+    // Verificamos si existe el usuario y si tiene la propiedad 'rol'
     if (!usuario || !usuario.rol) {
-      return res.status(403).json({ message: 'Acceso denegado: Usuario sin rol' });
+      return res.status(403).json({ 
+        message: 'Acceso denegado: El token no contiene información de rol' 
+      });
     }
 
-    // Como ahora es un solo string, usamos .includes directamente sobre el array de permitidos
+    // Comparamos el rol del token con los permitidos en la ruta
     const tienePermiso = rolesPermitidos.includes(usuario.rol);
 
     if (!tienePermiso) {
-      return res.status(403).json({ message: 'No tienes permisos para esta acción' });
+      return res.status(403).json({ 
+        message: `No tienes permisos. Tu rol es: ${usuario.rol}` 
+      });
     }
 
     next();
