@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/app.cultivos.controller');
-const { todos, agronomo, admin } = require('../middlewares/permisos.config');
+const { todos, agronomo } = require('../middlewares/permisos.config');
 
 // Obtener todos los cultivos
 router.get('/', todos, controller.getCultivos);
