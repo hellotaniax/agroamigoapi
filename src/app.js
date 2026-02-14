@@ -32,7 +32,7 @@ const fertilizantesAppRoutes = require('./routes/app.fertilizantes.routes');
 const mensajesAppRoutes = require('./routes/app.mensajes.routes');
 const recomendacionesAppRoutes = require('./routes/app.recomendaciones.routes');
 const usuariosAppRoutes = require('./routes/app.usuarios.routes');
-
+const aplicacionesFertilizantesAppRoutes = require('./routes/app.aplicacionesfertilizantes.routes');
 
 
 // Middleware global de errores
@@ -75,7 +75,7 @@ app.use('/api/app/fertilizantes', fertilizantesAppRoutes);
 app.use('/api/app/mensajes', mensajesAppRoutes);
 app.use('/api/app/recomendaciones', recomendacionesAppRoutes);
 app.use('/api/app/usuarios', usuariosAppRoutes);
-
+app.use('/api/app/aplicaciones-fertilizantes', aplicacionesFertilizantesAppRoutes);
 
 // ===============================
 // Rutas de autenticación
