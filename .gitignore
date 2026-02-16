@@ -60,7 +60,6 @@ temp/
 # Docker (si luego lo usas)
 # ===============================
 .dockerignore
-.Dockerfile
 
 # ===============================
 # Supabase / secrets
