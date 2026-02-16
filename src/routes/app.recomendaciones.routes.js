@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/app.recomendaciones.controller');
-const { todos, agronomo, admin, investigador } = require('../middlewares/permisos.config');
+const { todos, investigador } = require('../middlewares/permisos.config');
 
 router.get('/', todos, controller.getRecomendaciones);               
 router.get('/:id', todos, controller.getRecomendacionById);         

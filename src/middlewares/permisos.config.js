@@ -14,7 +14,7 @@ const permisos = {
     verificarRol('Agrónomo', 'Admin')
   ],
 
-    investigador: [
+  investigador: [
     verificarToken,
     verificarRol('Investigador', 'Admin')
   ],
