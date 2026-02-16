@@ -1,7 +1,18 @@
-const { generarToken, compararPassword } = require('../services/auth.service');
+const { 
+  generarToken, 
+  compararPassword, 
+  hashearPassword,
+  generarCodigoRecuperacion,
+  hashearCodigo,
+  compararCodigo
+} = require('../services/auth.service');
+const { enviarCodigoRecuperacion } = require('../services/email.service');
 const poolApp = require('../config/admindb');
 const poolAgente = require('../config/agentedb');
 
+/**
+ * Login de usuario
+ */
 const login = async (req, res) => {
   const { email, password, tipo } = req.body;
 
@@ -10,8 +21,6 @@ const login = async (req, res) => {
 
     if (!pool) return res.status(500).json({ message: "Pool de DB no definido" });
 
-    // Consulta actualizada para usar la relación directa con la tabla roles
-    // SELECT que debe estar en tu servicio de login
     const result = await pool.query(
       `SELECT u.idusu, u.nombreusu, u.emailusu, u.contraseniausu, r.nombrerol AS rol
       FROM usuarios u
@@ -26,7 +35,6 @@ const login = async (req, res) => {
 
     const usuario = result.rows[0];
 
-    // Se usa usuario.contraseniausu que es el nombre real en tu DB
     const valido = await compararPassword(password, usuario.contraseniausu);
     if (!valido) {
       return res.status(401).json({ message: "Credenciales inválidas" });
@@ -49,4 +57,221 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { login };
+/**
+ * Cambia la contraseña del usuario autenticado
+ */
+const cambiarPassword = async (req, res) => {
+  const { passwordActual, passwordNueva, tipo } = req.body;
+  const usuarioId = req.user.id;
+
+  try {
+    if (!passwordActual || !passwordNueva) {
+      return res.status(400).json({ 
+        message: "Se requiere la contraseña actual y la nueva contraseña" 
+      });
+    }
+
+    if (passwordNueva.length < 6) {
+      return res.status(400).json({ 
+        message: "La nueva contraseña debe tener al menos 6 caracteres" 
+      });
+    }
+
+    if (passwordActual === passwordNueva) {
+      return res.status(400).json({ 
+        message: "La nueva contraseña debe ser diferente a la actual" 
+      });
+    }
+
+    const pool = tipo === "agente" ? poolAgente : poolApp;
+
+    if (!pool) {
+      return res.status(500).json({ message: "Pool de DB no definido" });
+    }
+
+    const result = await pool.query(
+      'SELECT idusu, contraseniausu FROM usuarios WHERE idusu = $1',
+      [usuarioId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    const usuario = result.rows[0];
+
+    const passwordValida = await compararPassword(passwordActual, usuario.contraseniausu);
+    
+    if (!passwordValida) {
+      return res.status(401).json({ message: "La contraseña actual es incorrecta" });
+    }
+
+    const nuevaPasswordHash = await hashearPassword(passwordNueva);
+
+    await pool.query(
+      'UPDATE usuarios SET contraseniausu = $1 WHERE idusu = $2',
+      [nuevaPasswordHash, usuarioId]
+    );
+
+    res.json({ 
+      message: "Contraseña actualizada exitosamente" 
+    });
+
+  } catch (error) {
+    console.error('Error al cambiar contraseña:', error);
+    res.status(500).json({ message: "Error al cambiar la contraseña" });
+  }
+};
+
+/**
+ * Solicitar código de recuperación de contraseña
+ */
+const solicitarRecuperacion = async (req, res) => {
+  const { email, tipo } = req.body;
+
+  try {
+    if (!email) {
+      return res.status(400).json({ message: "El email es requerido" });
+    }
+
+    const pool = tipo === "agente" ? poolAgente : poolApp;
+
+    if (!pool) {
+      return res.status(500).json({ message: "Pool de DB no definido" });
+    }
+
+    const result = await pool.query(
+      'SELECT idusu, emailusu, nombreusu FROM usuarios WHERE emailusu = $1',
+      [email]
+    );
+
+    // Por seguridad, siempre retornar el mismo mensaje
+    if (result.rows.length === 0) {
+      return res.json({ 
+        message: "Si el email existe, recibirás un código de recuperación" 
+      });
+    }
+
+    const usuario = result.rows[0];
+
+    const codigo = generarCodigoRecuperacion();
+    const codigoHash = await hashearCodigo(codigo);
+    const expiracion = new Date(Date.now() + 15 * 60 * 1000);
+
+    await pool.query(
+      `UPDATE usuarios 
+       SET codigo_recuperacion = $1, 
+           codigo_expiracion = $2 
+       WHERE idusu = $3`,
+      [codigoHash, expiracion, usuario.idusu]
+    );
+
+    // Enviar email con el código
+    try {
+      await enviarCodigoRecuperacion(usuario.emailusu, codigo, usuario.nombreusu);
+      console.log(`✅ Código de recuperación enviado a ${email}`);
+    } catch (emailError) {
+      console.error('❌ Error al enviar email:', emailError);
+      // Continuar para no revelar si el email existe
+    }
+
+    res.json({ 
+      message: "Si el email existe, recibirás un código de recuperación"
+    });
+
+  } catch (error) {
+    console.error('Error al solicitar recuperación:', error);
+    res.status(500).json({ message: "Error al procesar la solicitud" });
+  }
+};
+
+/**
+ * Restablecer contraseña con código de recuperación
+ */
+const restablecerPassword = async (req, res) => {
+  const { email, codigo, passwordNueva, tipo } = req.body;
+
+  try {
+    if (!email || !codigo || !passwordNueva) {
+      return res.status(400).json({ 
+        message: "Email, código y nueva contraseña son requeridos" 
+      });
+    }
+
+    if (passwordNueva.length < 6) {
+      return res.status(400).json({ 
+        message: "La nueva contraseña debe tener al menos 6 caracteres" 
+      });
+    }
+
+    const pool = tipo === "agente" ? poolAgente : poolApp;
+
+    if (!pool) {
+      return res.status(500).json({ message: "Pool de DB no definido" });
+    }
+
+    const result = await pool.query(
+      `SELECT idusu, emailusu, codigo_recuperacion, codigo_expiracion 
+       FROM usuarios 
+       WHERE emailusu = $1`,
+      [email]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ message: "Código inválido o expirado" });
+    }
+
+    const usuario = result.rows[0];
+
+    if (!usuario.codigo_recuperacion || !usuario.codigo_expiracion) {
+      return res.status(400).json({ message: "Código inválido o expirado" });
+    }
+
+    const ahora = new Date();
+    const expiracion = new Date(usuario.codigo_expiracion);
+
+    if (ahora > expiracion) {
+      await pool.query(
+        `UPDATE usuarios 
+         SET codigo_recuperacion = NULL, 
+             codigo_expiracion = NULL 
+         WHERE idusu = $1`,
+        [usuario.idusu]
+      );
+
+      return res.status(400).json({ message: "Código expirado" });
+    }
+
+    const codigoValido = await compararCodigo(codigo, usuario.codigo_recuperacion);
+
+    if (!codigoValido) {
+      return res.status(400).json({ message: "Código inválido" });
+    }
+
+    const nuevaPasswordHash = await hashearPassword(passwordNueva);
+
+    await pool.query(
+      `UPDATE usuarios 
+       SET contraseniausu = $1,
+           codigo_recuperacion = NULL,
+           codigo_expiracion = NULL
+       WHERE idusu = $2`,
+      [nuevaPasswordHash, usuario.idusu]
+    );
+
+    res.json({ 
+      message: "Contraseña restablecida exitosamente" 
+    });
+
+  } catch (error) {
+    console.error('Error al restablecer contraseña:', error);
+    res.status(500).json({ message: "Error al restablecer la contraseña" });
+  }
+};
+
+module.exports = { 
+  login, 
+  cambiarPassword,
+  solicitarRecuperacion,
+  restablecerPassword
+};
