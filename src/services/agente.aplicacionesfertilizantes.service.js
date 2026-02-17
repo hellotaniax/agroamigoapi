@@ -9,8 +9,8 @@ exports.getAplicacionesValidas = async () => {
 
 exports.esAplicacionValida = async (nombre) => {
   const { rowCount } = await db.query(
-    // Se asume columna 'nombreapp'. Ajustar si es necesario.
-    'SELECT 1 FROM vw_ag_aplicaciones_detalladas WHERE LOWER(nombreapp) = LOWER($1)',
+    
+    'SELECT 1 FROM vw_ag_aplicaciones_detalladas WHERE LOWER(forma_aplicacion) = LOWER($1) LIMIT 1',
     [nombre]
   );
   return rowCount > 0;
