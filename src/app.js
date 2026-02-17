@@ -58,7 +58,7 @@ app.use('/api/cultivos', cultivosRoutes);
 app.use('/api/mensajes', mensajesRoutes);
 app.use('/api/recomendaciones', recomendacionesRoutes);
 app.use('/api/fertilizantes', fertilizantesRoutes); 
-app.use('/api/aplicaciones-fertilizantes', aplicacionesFertilizantesRoutes); 
+app.use('/api/aplicaciones.fertilizantes', aplicacionesFertilizantesRoutes); 
 
 // ===============================
 // Rutas de la aplicación
