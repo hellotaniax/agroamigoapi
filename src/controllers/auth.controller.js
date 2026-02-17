@@ -16,16 +16,21 @@ const poolAgente = require('../config/agentedb');
 const login = async (req, res) => {
   const { email, password, tipo } = req.body;
 
+  const MAX_INTENTOS = 5;
+  const MINUTOS_BLOQUEO = 15;
+
   try {
     const pool = tipo === "agente" ? poolAgente : poolApp;
-
     if (!pool) return res.status(500).json({ message: "Pool de DB no definido" });
 
+    // ── CAMBIO: incluir campos de seguridad en el SELECT ──────────────────
     const result = await pool.query(
-      `SELECT u.idusu, u.nombreusu, u.emailusu, u.contraseniausu, r.nombrerol AS rol
-      FROM usuarios u
-      JOIN roles r ON u.idrol = r.idrol
-      WHERE u.emailusu = $1`,
+      `SELECT u.idusu, u.nombreusu, u.emailusu, u.contraseniausu,
+              u.intentos_fallidos, u.bloqueado_hasta,
+              r.nombrerol AS rol
+       FROM usuarios u
+       JOIN roles r ON u.idrol = r.idrol
+       WHERE u.emailusu = $1`,
       [email]
     );
 
@@ -35,10 +40,58 @@ const login = async (req, res) => {
 
     const usuario = result.rows[0];
 
-    const valido = await compararPassword(password, usuario.contraseniausu);
-    if (!valido) {
-      return res.status(401).json({ message: "Credenciales inválidas" });
+    // ── NUEVO: verificar bloqueo activo ───────────────────────────────────
+    if (usuario.bloqueado_hasta && new Date(usuario.bloqueado_hasta) > new Date()) {
+      const minutosRestantes = Math.ceil(
+        (new Date(usuario.bloqueado_hasta) - new Date()) / 60000
+      );
+      return res.status(403).json({
+        message: `Cuenta bloqueada. Intenta de nuevo en ${minutosRestantes} minuto(s).`,
+        bloqueado: true
+      });
     }
+
+    const valido = await compararPassword(password, usuario.contraseniausu);
+
+    // ── NUEVO: manejar contraseña incorrecta con conteo ───────────────────
+    if (!valido) {
+      const nuevosIntentos = (usuario.intentos_fallidos || 0) + 1;
+      const ahora = new Date();
+      const seBloqueaAhora = nuevosIntentos >= MAX_INTENTOS;
+      const bloqueadoHasta = seBloqueaAhora
+        ? new Date(ahora.getTime() + MINUTOS_BLOQUEO * 60000)
+        : null;
+
+      await pool.query(
+        `UPDATE usuarios
+         SET intentos_fallidos = $1,
+             ultimo_intento     = $2,
+             bloqueado_hasta    = $3
+         WHERE idusu = $4`,
+        [nuevosIntentos, ahora, bloqueadoHasta, usuario.idusu]
+      );
+
+      if (seBloqueaAhora) {
+        return res.status(403).json({
+          message: `Demasiados intentos fallidos. Cuenta bloqueada por ${MINUTOS_BLOQUEO} minutos.`,
+          bloqueado: true
+        });
+      }
+
+      return res.status(401).json({
+        message: `Credenciales inválidas. Intentos restantes: ${MAX_INTENTOS - nuevosIntentos}`
+      });
+    }
+
+    // ── NUEVO: login exitoso → resetear contadores ────────────────────────
+    await pool.query(
+      `UPDATE usuarios
+       SET intentos_fallidos = 0,
+           bloqueado_hasta    = NULL,
+           ultimo_intento     = NULL
+       WHERE idusu = $1`,
+      [usuario.idusu]
+    );
 
     const token = generarToken(usuario);
 
@@ -47,7 +100,7 @@ const login = async (req, res) => {
       usuario: {
         id: usuario.idusu,
         email: usuario.emailusu,
-        rol: usuario.rol 
+        rol: usuario.rol
       }
     });
 
