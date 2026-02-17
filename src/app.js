@@ -13,6 +13,8 @@ const authRoutes = require('./routes/auth.routes');
 const cultivosRoutes = require('./routes/agente.cultivos.routes');
 const mensajesRoutes = require('./routes/agente.mensajes.routes');
 const recomendacionesRoutes = require('./routes/agente.recomendaciones.routes');
+const fertilizantesRoutes = require('./routes/agente.fertilizantes.routes'); 
+const aplicacionesFertilizantesRoutes = require('./routes/agente.aplicacionesfertilizantes.routes');
 
 
 // Rutas de la aplicación
@@ -55,6 +57,8 @@ app.use(express.json());
 app.use('/api/cultivos', cultivosRoutes);
 app.use('/api/mensajes', mensajesRoutes);
 app.use('/api/recomendaciones', recomendacionesRoutes);
+app.use('/api/fertilizantes', fertilizantesRoutes); 
+app.use('/api/aplicaciones-fertilizantes', aplicacionesFertilizantesRoutes); 
 
 // ===============================
 // Rutas de la aplicación
