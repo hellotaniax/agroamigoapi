@@ -23,7 +23,6 @@ const login = async (req, res) => {
     const pool = tipo === "agente" ? poolAgente : poolApp;
     if (!pool) return res.status(500).json({ message: "Pool de DB no definido" });
 
-    // ── CAMBIO: incluir campos de seguridad en el SELECT ──────────────────
     const result = await pool.query(
       `SELECT u.idusu, u.nombreusu, u.emailusu, u.contraseniausu,
               u.intentos_fallidos, u.bloqueado_hasta,
@@ -40,7 +39,21 @@ const login = async (req, res) => {
 
     const usuario = result.rows[0];
 
-    // ── NUEVO: verificar bloqueo activo ───────────────────────────────────
+    // 1. Si el bloqueo ya expiró, limpiar contadores antes de continuar
+    if (usuario.bloqueado_hasta && new Date(usuario.bloqueado_hasta) <= new Date()) {
+      await pool.query(
+        `UPDATE usuarios
+         SET intentos_fallidos = 0,
+             bloqueado_hasta    = NULL,
+             ultimo_intento     = NULL
+         WHERE idusu = $1`,
+        [usuario.idusu]
+      );
+      usuario.intentos_fallidos = 0;
+      usuario.bloqueado_hasta   = null;
+    }
+
+    // 2. Verificar si sigue bloqueado activamente
     if (usuario.bloqueado_hasta && new Date(usuario.bloqueado_hasta) > new Date()) {
       const minutosRestantes = Math.ceil(
         (new Date(usuario.bloqueado_hasta) - new Date()) / 60000
@@ -48,13 +61,13 @@ const login = async (req, res) => {
       return res.status(403).json({
         message: `Cuenta bloqueada. Intenta de nuevo en ${minutosRestantes} minuto(s).`,
         bloqueado: true,
-        bloqueado_hasta: usuario.bloqueado_hasta  // ← el frontend puede hacer countdown con esto
+        bloqueado_hasta: usuario.bloqueado_hasta
       });
     }
 
+    // 3. Verificar contraseña
     const valido = await compararPassword(password, usuario.contraseniausu);
 
-    // ── NUEVO: manejar contraseña incorrecta con conteo ───────────────────
     if (!valido) {
       const nuevosIntentos = (usuario.intentos_fallidos || 0) + 1;
       const ahora = new Date();
@@ -75,7 +88,8 @@ const login = async (req, res) => {
       if (seBloqueaAhora) {
         return res.status(403).json({
           message: `Demasiados intentos fallidos. Cuenta bloqueada por ${MINUTOS_BLOQUEO} minutos.`,
-          bloqueado: true
+          bloqueado: true,
+          bloqueado_hasta: bloqueadoHasta
         });
       }
 
@@ -84,7 +98,7 @@ const login = async (req, res) => {
       });
     }
 
-    // ── NUEVO: login exitoso → resetear contadores ────────────────────────
+    // 4. Login exitoso → resetear contadores
     await pool.query(
       `UPDATE usuarios
        SET intentos_fallidos = 0,
@@ -220,13 +234,11 @@ const solicitarRecuperacion = async (req, res) => {
       [codigoHash, expiracion, usuario.idusu]
     );
 
-    // Enviar email con el código
     try {
       await enviarCodigoRecuperacion(usuario.emailusu, codigo, usuario.nombreusu);
       console.log(`✅ Código de recuperación enviado a ${email}`);
     } catch (emailError) {
       console.error('❌ Error al enviar email:', emailError);
-      // Continuar para no revelar si el email existe
     }
 
     res.json({
