@@ -2,7 +2,7 @@ const db = require('../config/agentedb');
 
 exports.getCultivosValidos = async () => {
   const { rows } = await db.query(
-    'SELECT nombrecul FROM vw_ag_cultivos_validos'
+    'SELECT * FROM vw_ag_cultivos_validos'
   );
   return rows;
 };
