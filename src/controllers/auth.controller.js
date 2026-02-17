@@ -16,8 +16,8 @@ const poolAgente = require('../config/agentedb');
 const login = async (req, res) => {
   const { email, password, tipo } = req.body;
 
-  const MAX_INTENTOS = 5;
-  const MINUTOS_BLOQUEO = 15;
+  const MAX_INTENTOS = 3;
+  const MINUTOS_BLOQUEO = 30;
 
   try {
     const pool = tipo === "agente" ? poolAgente : poolApp;
@@ -26,9 +26,10 @@ const login = async (req, res) => {
     const result = await pool.query(
       `SELECT u.idusu, u.nombreusu, u.emailusu, u.contraseniausu,
               u.intentos_fallidos, u.bloqueado_hasta,
-              r.nombrerol AS rol
+              r.nombrerol AS rol, e.nombreest AS estado
        FROM usuarios u
        JOIN roles r ON u.idrol = r.idrol
+       JOIN estados e ON u.idest = e.idest
        WHERE u.emailusu = $1`,
       [email]
     );
@@ -38,6 +39,13 @@ const login = async (req, res) => {
     }
 
     const usuario = result.rows[0];
+
+    // Verificar que la cuenta esté activa
+    if (usuario.estado !== 'Activo') {
+      return res.status(403).json({ 
+        message: "Esta cuenta no está activa. Contacta al administrador." 
+      });
+    }
 
     // 1. Si el bloqueo ya expiró, limpiar contadores antes de continuar
     if (usuario.bloqueado_hasta && new Date(usuario.bloqueado_hasta) <= new Date()) {

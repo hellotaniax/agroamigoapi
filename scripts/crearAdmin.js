@@ -9,7 +9,7 @@ async function crearAdmin() {
       apellidosusu: 'General',     // Requerido (NOT NULL en tu DB)
       emailusu: 'admin@agroamigo.com',
       passwordusu: 'MiNuevaPassword123',
-      idrol: 2,                    // Requerido por la nueva relación de roles
+      idrol: 1,                    // Requerido por la nueva relación de roles
       idest: 1                     // Estado (ej: Activo)
     });
     console.log('Admin creado correctamente:', admin);
