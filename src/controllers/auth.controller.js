@@ -1,6 +1,6 @@
-const { 
-  generarToken, 
-  compararPassword, 
+const {
+  generarToken,
+  compararPassword,
   hashearPassword,
   generarCodigoRecuperacion,
   hashearCodigo,
@@ -47,7 +47,8 @@ const login = async (req, res) => {
       );
       return res.status(403).json({
         message: `Cuenta bloqueada. Intenta de nuevo en ${minutosRestantes} minuto(s).`,
-        bloqueado: true
+        bloqueado: true,
+        bloqueado_hasta: usuario.bloqueado_hasta  // ← el frontend puede hacer countdown con esto
       });
     }
 
@@ -119,20 +120,20 @@ const cambiarPassword = async (req, res) => {
 
   try {
     if (!passwordActual || !passwordNueva) {
-      return res.status(400).json({ 
-        message: "Se requiere la contraseña actual y la nueva contraseña" 
+      return res.status(400).json({
+        message: "Se requiere la contraseña actual y la nueva contraseña"
       });
     }
 
     if (passwordNueva.length < 6) {
-      return res.status(400).json({ 
-        message: "La nueva contraseña debe tener al menos 6 caracteres" 
+      return res.status(400).json({
+        message: "La nueva contraseña debe tener al menos 6 caracteres"
       });
     }
 
     if (passwordActual === passwordNueva) {
-      return res.status(400).json({ 
-        message: "La nueva contraseña debe ser diferente a la actual" 
+      return res.status(400).json({
+        message: "La nueva contraseña debe ser diferente a la actual"
       });
     }
 
@@ -154,7 +155,7 @@ const cambiarPassword = async (req, res) => {
     const usuario = result.rows[0];
 
     const passwordValida = await compararPassword(passwordActual, usuario.contraseniausu);
-    
+
     if (!passwordValida) {
       return res.status(401).json({ message: "La contraseña actual es incorrecta" });
     }
@@ -166,8 +167,8 @@ const cambiarPassword = async (req, res) => {
       [nuevaPasswordHash, usuarioId]
     );
 
-    res.json({ 
-      message: "Contraseña actualizada exitosamente" 
+    res.json({
+      message: "Contraseña actualizada exitosamente"
     });
 
   } catch (error) {
@@ -200,8 +201,8 @@ const solicitarRecuperacion = async (req, res) => {
 
     // Por seguridad, siempre retornar el mismo mensaje
     if (result.rows.length === 0) {
-      return res.json({ 
-        message: "Si el email existe, recibirás un código de recuperación" 
+      return res.json({
+        message: "Si el email existe, recibirás un código de recuperación"
       });
     }
 
@@ -228,7 +229,7 @@ const solicitarRecuperacion = async (req, res) => {
       // Continuar para no revelar si el email existe
     }
 
-    res.json({ 
+    res.json({
       message: "Si el email existe, recibirás un código de recuperación"
     });
 
@@ -246,14 +247,14 @@ const restablecerPassword = async (req, res) => {
 
   try {
     if (!email || !codigo || !passwordNueva) {
-      return res.status(400).json({ 
-        message: "Email, código y nueva contraseña son requeridos" 
+      return res.status(400).json({
+        message: "Email, código y nueva contraseña son requeridos"
       });
     }
 
     if (passwordNueva.length < 6) {
-      return res.status(400).json({ 
-        message: "La nueva contraseña debe tener al menos 6 caracteres" 
+      return res.status(400).json({
+        message: "La nueva contraseña debe tener al menos 6 caracteres"
       });
     }
 
@@ -312,8 +313,8 @@ const restablecerPassword = async (req, res) => {
       [nuevaPasswordHash, usuario.idusu]
     );
 
-    res.json({ 
-      message: "Contraseña restablecida exitosamente" 
+    res.json({
+      message: "Contraseña restablecida exitosamente"
     });
 
   } catch (error) {
@@ -322,8 +323,8 @@ const restablecerPassword = async (req, res) => {
   }
 };
 
-module.exports = { 
-  login, 
+module.exports = {
+  login,
   cambiarPassword,
   solicitarRecuperacion,
   restablecerPassword
