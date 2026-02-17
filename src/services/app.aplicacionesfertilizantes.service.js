@@ -19,26 +19,26 @@ exports.getAplicacionById = async (idapl) => {
 
 // Crear nueva aplicación 
 exports.createAplicacion = async (datos) => {
-  const { idfer, idfor, ideta, dosisminapl, dosismaxapl, recomendacionapl } = datos;
+  const { idfer, idfor, ideta, dosisminapl, dosismaxapl, recomendacionapl, idest } = datos;
   
   const { rows } = await db.query(
     `INSERT INTO aplicaciones_fertilizantes 
-    (idfer, idfor, ideta, dosisminapl, dosismaxapl, recomendacionapl) 
-    VALUES ($1, $2, $3, $4, $5, $6) 
+    (idfer, idfor, ideta, dosisminapl, dosismaxapl, recomendacionapl, idest) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7) 
     RETURNING *`,
-    [idfer, idfor, ideta, dosisminapl, dosismaxapl, recomendacionapl]
+    [idfer, idfor, ideta, dosisminapl, dosismaxapl, recomendacionapl, idest]
   );
   return rows[0];
 };
 
 // Actualizar aplicación
 exports.updateAplicacion = async (idapl, datos) => {
-  const { idfer, idfor, ideta, dosisminapl, dosismaxapl, recomendacionapl } = datos;
+  const { idfer, idfor, ideta, dosisminapl, dosismaxapl, recomendacionapl, idest } = datos;
   const { rows } = await db.query(
     `UPDATE aplicaciones_fertilizantes 
-     SET idfer = $1, idfor = $2, ideta = $3, dosisminapl = $4, dosismaxapl = $5, recomendacionapl = $6
-     WHERE idapl = $7 RETURNING *`,
-    [idfer, idfor, ideta, dosisminapl, dosismaxapl, recomendacionapl, idapl]
+     SET idfer = $1, idfor = $2, ideta = $3, dosisminapl = $4, dosismaxapl = $5, recomendacionapl = $6, idest = $7
+     WHERE idapl = $8 RETURNING *`,
+    [idfer, idfor, ideta, dosisminapl, dosismaxapl, recomendacionapl, idest, idapl]
   );
   return rows[0];
 };
