@@ -57,8 +57,11 @@ app.use(express.json());
 app.use('/api/cultivos', cultivosRoutes);
 app.use('/api/mensajes', mensajesRoutes);
 app.use('/api/recomendaciones', recomendacionesRoutes);
+console.log('1. Ruta Cultivos:', typeof cultivosRoutes); // Debería decir 'function'
+console.log('2. Ruta Fertilizantes (TYPE):', typeof fertilizantesRoutes); // ¿Dice 'undefined' o 'object'?
+console.log('3. Ruta Fertilizantes (VALOR):', fertilizantesRoutes);
 app.use('/api/fertilizantes', fertilizantesRoutes); 
-app.use('/api/aplicaciones.fertilizantes', aplicacionesFertilizantesRoutes); 
+app.use('/api/aplicaciones-fertilizantes', aplicacionesFertilizantesRoutes); 
 
 // ===============================
 // Rutas de la aplicación
