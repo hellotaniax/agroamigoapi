@@ -2,7 +2,7 @@ const service = require('../services/agente.aplicacionesfertilizantes.service');
 
 /**
  * 1️⃣ Obtener lista de fertilizantes
- * GET /api/agente/fertilizantes
+ * GET /api/fertilizantes
  */
 exports.obtenerFertilizantes = async (req, res) => {
   try {
@@ -15,7 +15,7 @@ exports.obtenerFertilizantes = async (req, res) => {
 
 /**
  * 2️⃣ Obtener formas de aplicación por fertilizante
- * GET /api/agente/fertilizantes/:fertilizante/formas
+ * GET /api/fertilizantes/:fertilizante/formas
  */
 exports.obtenerFormas = async (req, res) => {
   try {
@@ -36,7 +36,7 @@ exports.obtenerFormas = async (req, res) => {
 
 /**
  * 3️⃣ Obtener etapas según fertilizante y forma
- * GET /api/agente/fertilizantes/:fertilizante/formas/:forma/etapas
+ * GET /api/fertilizantes/:fertilizante/formas/:forma/etapas
  */
 exports.obtenerEtapas = async (req, res) => {
   try {
@@ -57,7 +57,7 @@ exports.obtenerEtapas = async (req, res) => {
 
 /**
  * 4️⃣ Obtener recomendación final
- * GET /api/agente/recomendacion?fertilizante=&forma=&etapa=
+ * GET /api/recomendacion?fertilizante=&forma=&etapa=
  */
 exports.obtenerRecomendacion = async (req, res) => {
   try {
@@ -89,7 +89,7 @@ exports.obtenerRecomendacion = async (req, res) => {
 
 /**
  * 5️⃣ Buscar fertilizante por nombre (entrada libre del usuario)
- * GET /api/agente/fertilizantes/buscar/:nombre
+ * GET /api/fertilizantes/buscar/:nombre
  */
 exports.buscarFertilizante = async (req, res) => {
   try {
@@ -110,7 +110,7 @@ exports.buscarFertilizante = async (req, res) => {
 
 /**
  * 6️⃣ Validar forma de aplicación
- * GET /api/agente/aplicaciones/validar/:forma
+ * GET /api/aplicaciones/validar/:forma
  */
 exports.validarAplicacion = async (req, res) => {
   try {
